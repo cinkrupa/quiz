@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Quiz Wiedzy - Sprawdź swoją wiedzę",
-  description: "Interaktywny quiz z pytaniami z różnych dziedzin. Sprawdź swoją wiedzę i naucz się czegoś nowego!",
+  title: "Knowledge Quiz - Test Your Knowledge",
+  description: "Interactive quiz with questions from various topics. Test your knowledge and learn something new!",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -25,18 +25,17 @@ export function Quiz() {
 
   // Welcome screen
   if (questions.length === 0 && !isLoading && !error) {
-    return (
-      <Card className="w-full max-w-md mx-auto">
+    return (      <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="text-6xl mb-4">🧠</div>
-          <CardTitle className="text-2xl">Quiz Wiedzy</CardTitle>
+          <CardTitle className="text-2xl">Knowledge Quiz</CardTitle>
           <p className="text-muted-foreground">
-            Sprawdź swoją wiedzę odpowiadając na 10 pytań z różnych kategorii!
+            Test your knowledge by answering 10 questions from various categories!
           </p>
         </CardHeader>
         <CardContent>
           <Button onClick={startQuiz} className="w-full" size="lg">
-            Rozpocznij Quiz
+            Start Quiz
           </Button>
         </CardContent>
       </Card>
@@ -45,11 +44,10 @@ export function Quiz() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <Card className="w-full max-w-md mx-auto">
+    return (      <Card className="w-full max-w-md mx-auto">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-          <p className="text-muted-foreground">Ładowanie pytań...</p>
+          <p className="text-muted-foreground">Loading questions...</p>
         </CardContent>
       </Card>
     );
@@ -57,16 +55,15 @@ export function Quiz() {
 
   // Error state
   if (error) {
-    return (
-      <Card className="w-full max-w-md mx-auto">
+    return (      <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="text-6xl mb-4">😔</div>
-          <CardTitle className="text-xl">Ups! Coś poszło nie tak</CardTitle>
+          <CardTitle className="text-xl">Oops! Something went wrong</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground text-center">{error}</p>
           <Button onClick={startQuiz} className="w-full">
-            Spróbuj ponownie
+            Try Again
           </Button>
         </CardContent>
       </Card>
@@ -88,10 +85,9 @@ export function Quiz() {
   const currentQuestion = getCurrentQuestion();
   
   if (!currentQuestion) {
-    return (
-      <Card className="w-full max-w-md mx-auto">
+    return (      <Card className="w-full max-w-md mx-auto">
         <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-muted-foreground">Brak pytań do wyświetlenia</p>
+          <p className="text-muted-foreground">No questions to display</p>
         </CardContent>
       </Card>
     );

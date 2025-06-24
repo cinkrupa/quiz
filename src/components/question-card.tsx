@@ -43,10 +43,9 @@ export function QuestionCard({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
+        <div className="space-y-4">          <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              Pytanie {currentQuestionNumber} z {totalQuestions}
+              Question {currentQuestionNumber} of {totalQuestions}
             </span>
             <span className="text-sm font-medium text-muted-foreground capitalize">
               {question.difficulty} • {question.category}
@@ -74,26 +73,24 @@ export function QuestionCard({
         </div>
         
         {isAnswered && (
-          <div className="pt-4 border-t space-y-4">
-            <div className="text-center">
+          <div className="pt-4 border-t space-y-4">            <div className="text-center">
               {selectedAnswer === question.correctAnswer ? (
                 <p className="text-green-600 font-medium">
-                  ✅ Poprawna odpowiedź!
+                  ✅ Correct answer!
                 </p>
               ) : (
                 <div className="space-y-1">
                   <p className="text-red-600 font-medium">
-                    ❌ Niepoprawna odpowiedź
+                    ❌ Incorrect answer
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Poprawna odpowiedź: <strong>{question.correctAnswer}</strong>
+                    Correct answer: <strong>{question.correctAnswer}</strong>
                   </p>
                 </div>
               )}
             </div>
-            
-            <Button onClick={onNext} className="w-full">
-              {currentQuestionNumber === totalQuestions ? 'Zobacz wyniki' : 'Następne pytanie'}
+              <Button onClick={onNext} className="w-full">
+              {currentQuestionNumber === totalQuestions ? 'See Results' : 'Next Question'}
             </Button>
           </div>
         )}
