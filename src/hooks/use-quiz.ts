@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { QuizState, ProcessedQuestion } from '@/types/quiz';
+import { QuizState, ProcessedQuestion, QuizSettings } from '@/types/quiz';
 import { fetchQuizQuestions } from '@/lib/quiz-service';
 
 const initialState: QuizState = {
@@ -12,21 +12,25 @@ const initialState: QuizState = {
   isQuizComplete: false,
   isLoading: false,
   error: null,
+  settings: {
+    category: 'any',
+    difficulty: 'any',
+  },
 };
 
 export function useQuiz() {
   const [state, setState] = useState<QuizState>(initialState);
-
-  const startQuiz = useCallback(async () => {
+  const startQuiz = useCallback(async (settings?: QuizSettings) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      const questions = await fetchQuizQuestions();
+      const questions = await fetchQuizQuestions(settings);
       setState(prev => ({
         ...prev,
         questions,
         answers: new Array(questions.length).fill(null),
         isLoading: false,
+        settings: settings || prev.settings,
       }));
     } catch (error) {
       setState(prev => ({
@@ -67,9 +71,14 @@ export function useQuiz() {
       };
     });
   }, []);
-
   const resetQuiz = useCallback(() => {
     setState(initialState);
+  }, []);
+  const updateSettings = useCallback((newSettings: QuizSettings) => {
+    setState(prev => ({
+      ...prev,
+      settings: newSettings,
+    }));
   }, []);
 
   const getCurrentQuestion = useCallback((): ProcessedQuestion | null => {
@@ -86,13 +95,13 @@ export function useQuiz() {
   const getCurrentAnswer = useCallback((): string | null => {
     return state.answers[state.currentQuestionIndex] ?? null;
   }, [state.answers, state.currentQuestionIndex]);
-
   return {
     ...state,
     startQuiz,
     answerQuestion,
     nextQuestion,
     resetQuiz,
+    updateSettings,
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,

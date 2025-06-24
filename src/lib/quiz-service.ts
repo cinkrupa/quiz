@@ -1,6 +1,39 @@
-import { QuizResponse, QuizQuestion, ProcessedQuestion } from '@/types/quiz';
+import { QuizResponse, QuizQuestion, ProcessedQuestion, QuizSettings, CategoryOption, DifficultyOption } from '@/types/quiz';
 
-const API_URL = 'https://opentdb.com/api.php?amount=10&type=multiple';
+const BASE_API_URL = 'https://opentdb.com/api.php?amount=10&type=multiple';
+
+// Available categories from OpenTDB API
+export const CATEGORIES: CategoryOption[] = [
+  { id: 'any', name: 'Any Category' },
+  { id: '9', name: 'General Knowledge' },
+  { id: '10', name: 'Entertainment: Books' },
+  { id: '11', name: 'Entertainment: Film' },
+  { id: '12', name: 'Entertainment: Music' },
+  { id: '13', name: 'Entertainment: Musicals & Theatres' },
+  { id: '14', name: 'Entertainment: Television' },
+  { id: '15', name: 'Entertainment: Video Games' },
+  { id: '16', name: 'Entertainment: Board Games' },
+  { id: '17', name: 'Science & Nature' },
+  { id: '18', name: 'Science: Computers' },
+  { id: '19', name: 'Science: Mathematics' },
+  { id: '20', name: 'Mythology' },
+  { id: '21', name: 'Sports' },
+  { id: '22', name: 'Geography' },
+  { id: '23', name: 'History' },
+  { id: '24', name: 'Politics' },
+  { id: '25', name: 'Art' },
+  { id: '26', name: 'Celebrities' },
+  { id: '27', name: 'Animals' },
+  { id: '28', name: 'Vehicles' },
+];
+
+// Available difficulties
+export const DIFFICULTIES: DifficultyOption[] = [
+  { id: 'any', name: 'Any Difficulty' },
+  { id: 'easy', name: 'Easy' },
+  { id: 'medium', name: 'Medium' },
+  { id: 'hard', name: 'Hard' },
+];
 
 // Decode HTML entities
 function decodeHtml(html: string): string {
@@ -19,9 +52,21 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-export async function fetchQuizQuestions(): Promise<ProcessedQuestion[]> {
+export async function fetchQuizQuestions(settings?: QuizSettings): Promise<ProcessedQuestion[]> {
   try {
-    const response = await fetch(API_URL);
+    let apiUrl = BASE_API_URL;
+    
+    // Add category parameter if specified
+    if (settings?.category && settings.category !== 'any') {
+      apiUrl += `&category=${settings.category}`;
+    }
+    
+    // Add difficulty parameter if specified
+    if (settings?.difficulty && settings.difficulty !== 'any') {
+      apiUrl += `&difficulty=${settings.difficulty}`;
+    }
+    
+    const response = await fetch(apiUrl);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

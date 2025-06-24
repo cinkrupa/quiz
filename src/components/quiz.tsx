@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { QuestionCard } from '@/components/question-card';
 import { QuizResults } from '@/components/quiz-results';
+import { QuizSettingsComponent } from '@/components/quiz-settings';
 
 export function Quiz() {
   const {
@@ -14,31 +15,33 @@ export function Quiz() {
     isQuizComplete,
     isLoading,
     error,
+    settings,
     startQuiz,
     answerQuestion,
     nextQuestion,
     resetQuiz,
+    updateSettings,
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,
   } = useQuiz();
 
-  // Welcome screen
+  const handleStartQuiz = () => {
+    startQuiz(settings);
+  };
+
+  const handleRetryQuiz = () => {
+    startQuiz(settings);
+  };
+
+  // Welcome screen with settings
   if (questions.length === 0 && !isLoading && !error) {
-    return (      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="text-center">
-          <div className="text-6xl mb-4">🧠</div>
-          <CardTitle className="text-2xl">Knowledge Quiz</CardTitle>
-          <p className="text-muted-foreground">
-            Test your knowledge by answering 10 questions from various categories!
-          </p>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={startQuiz} className="w-full" size="lg">
-            Start Quiz
-          </Button>
-        </CardContent>
-      </Card>
+    return (
+      <QuizSettingsComponent
+        settings={settings}
+        onSettingsChange={updateSettings}
+        onStartQuiz={handleStartQuiz}
+      />
     );
   }
 
@@ -59,10 +62,9 @@ export function Quiz() {
         <CardHeader className="text-center">
           <div className="text-6xl mb-4">😔</div>
           <CardTitle className="text-xl">Oops! Something went wrong</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </CardHeader>        <CardContent className="space-y-4">
           <p className="text-muted-foreground text-center">{error}</p>
-          <Button onClick={startQuiz} className="w-full">
+          <Button onClick={handleRetryQuiz} className="w-full">
             Try Again
           </Button>
         </CardContent>

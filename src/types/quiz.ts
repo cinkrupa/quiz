@@ -21,6 +21,11 @@ export interface ProcessedQuestion {
   difficulty: string;
 }
 
+export interface QuizSettings {
+  category: string;
+  difficulty: string;
+}
+
 export interface QuizState {
   questions: ProcessedQuestion[];
   currentQuestionIndex: number;
@@ -29,4 +34,15 @@ export interface QuizState {
   isQuizComplete: boolean;
   isLoading: boolean;
   error: string | null;
+  settings: QuizSettings;
+}
+
+export interface CategoryOption {
+  id: string;
+  name: string;
+}
+
+export interface DifficultyOption {
+  id: string;
+  name: string;
 }

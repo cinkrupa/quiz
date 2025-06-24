@@ -1,6 +1,16 @@
-# Quiz Wiedzy - Next.js Quiz Application
+# Kn## 🚀 Features
 
-Interaktywna aplikacja quiz zbudowana w Next.js 14 z użyciem App Router, TypeScript, Tailwind CSS i shadcn/ui.
+- **Home page** with category and difficulty selection
+- **Customizable quiz settings** - choose from 25+ categories and 3 difficulty levels
+- **10 multiple choice questions** fetched from Open Trivia DB API
+- **Question cards** with randomly arranged answers
+- **Immediate feedback** after selecting an answer
+- **Results summary** with percentage score
+- **Responsive design** that works on all devices
+- **Smooth transitions** between questions
+- **Progress bar** showing quiz progressiz - Next.js Quiz Application
+
+Interactive quiz application built with Next.js 14 using App Router, TypeScript, Tailwind CSS, and shadcn/ui.
 
 ## 🚀 Funkcjonalości
 
