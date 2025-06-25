@@ -57,7 +57,7 @@ export function Quiz() {
   // Leaderboard phase
   if (gamePhase === 'leaderboard') {
     return (
-      <Leaderboard onBack={goToQuizSettings} />
+      <Leaderboard onBack={goToPlayerSetup} />
     );
   }
 

@@ -94,7 +94,7 @@ export function Leaderboard({ onBack }: LeaderboardProps) {
                 </Button>
                 <Button variant="outline" onClick={onBack}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Menu
+                  Back to Player Selection
                 </Button>
               </div>
             </div>
@@ -179,7 +179,7 @@ export function Leaderboard({ onBack }: LeaderboardProps) {
               <div className="text-center">
                 <Button onClick={onBack} size="lg">
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to Menu
+                  Back to Player Selection
                 </Button>
               </div>
             </>
