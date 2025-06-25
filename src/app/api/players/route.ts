@@ -43,3 +43,24 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get('action');
+    
+    if (action === 'leaderboard') {
+      const db = getDatabaseAdapter();
+      const players = await db.getLeaderboard();
+      return NextResponse.json({ players });
+    }
+    
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+  } catch (error) {
+    console.error('Error in player API GET:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch data' },
+      { status: 500 }
+    );
+  }
+}

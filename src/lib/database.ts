@@ -45,6 +45,12 @@ const updatePlayerStats = db.prepare(`
   RETURNING *
 `);
 
+const selectLeaderboard = db.prepare(`
+  SELECT * FROM players 
+  ORDER BY score DESC, updated_at DESC 
+  LIMIT ?
+`);
+
 export class DatabaseService {
   static async createOrUpdatePlayer(name: string): Promise<Player> {
     try {
@@ -93,6 +99,21 @@ export class DatabaseService {
     } catch (error) {
       console.error('Error updating player stats:', error);
       throw new Error('Failed to update player statistics');
+    }
+  }
+
+  static async getLeaderboard(limit: number = 10): Promise<Player[]> {
+    try {
+      const players = selectLeaderboard.all(limit) as Player[];
+      
+      // Ensure all players have proper id field
+      return players.map(player => ({
+        ...player,
+        id: player.id || '',
+      }));
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      throw new Error('Failed to fetch leaderboard');
     }
   }
 

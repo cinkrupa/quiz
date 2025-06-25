@@ -3,6 +3,7 @@ import { Player } from '@/types/quiz';
 export interface DatabaseAdapter {
   createOrUpdatePlayer(name: string): Promise<Player>;
   updatePlayerStats(playerId: string, score: number, totalAnswers: number): Promise<Player>;
+  getLeaderboard(limit?: number): Promise<Player[]>;
 }
 
 // Dynamic imports to avoid bundling issues
@@ -128,6 +129,32 @@ export class SupabaseAdapter implements DatabaseAdapter {
       throw new Error('Failed to update player statistics');
     }
   }
+
+  async getLeaderboard(limit: number = 10): Promise<Player[]> {
+    await this.initialize();
+    
+    if (!this.supabase) {
+      throw new Error('Supabase client not initialized');
+    }
+    
+    try {
+      const { data, error } = await this.supabase
+        .from('players')
+        .select('*')
+        .order('score', { ascending: false })
+        .order('updated_at', { ascending: false }) // Secondary sort by most recent
+        .limit(limit);
+
+      if (error) {
+        throw error;
+      }
+
+      return (data || []) as unknown as Player[];
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      throw new Error('Failed to fetch leaderboard');
+    }
+  }
 }
 
 export class SQLiteAdapter implements DatabaseAdapter {
@@ -159,6 +186,16 @@ export class SQLiteAdapter implements DatabaseAdapter {
     }
     
     return this.databaseService.updatePlayerStats(playerId, score, totalAnswers);
+  }
+
+  async getLeaderboard(limit: number = 10): Promise<Player[]> {
+    await this.initialize();
+    
+    if (!this.databaseService) {
+      throw new Error('Database service not initialized');
+    }
+    
+    return this.databaseService.getLeaderboard(limit);
   }
 }
 

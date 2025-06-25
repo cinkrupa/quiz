@@ -155,6 +155,20 @@ export function useQuiz() {
     }));
   }, []);
 
+  const goToLeaderboard = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      gamePhase: 'leaderboard',
+    }));
+  }, []);
+
+  const goToQuizSettings = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      gamePhase: 'quiz-settings',
+    }));
+  }, []);
+
   return {
     ...state,
     setupPlayer,
@@ -164,6 +178,8 @@ export function useQuiz() {
     resetQuiz,
     updateSettings,
     goToPlayerSetup,
+    goToLeaderboard,
+    goToQuizSettings,
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,

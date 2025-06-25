@@ -11,9 +11,10 @@ interface QuizSettingsProps {
   onSettingsChange: (settings: QuizSettings) => void;
   onStartQuiz: () => void;
   onChangePlayer: () => void;
+  onShowLeaderboard: () => void;
 }
 
-export function QuizSettingsComponent({ settings, player, onSettingsChange, onStartQuiz, onChangePlayer }: QuizSettingsProps) {
+export function QuizSettingsComponent({ settings, player, onSettingsChange, onStartQuiz, onChangePlayer, onShowLeaderboard }: QuizSettingsProps) {
   const handleCategoryChange = (categoryId: string) => {
     onSettingsChange({
       ...settings,
@@ -97,9 +98,17 @@ export function QuizSettingsComponent({ settings, player, onSettingsChange, onSt
           </div>
         </div>
 
-        <div className="pt-4 border-t">
+        <div className="pt-4 border-t space-y-3">
           <Button onClick={onStartQuiz} className="w-full" size="lg">
             Start Quiz
+          </Button>
+          <Button 
+            onClick={onShowLeaderboard} 
+            variant="outline" 
+            className="w-full" 
+            size="lg"
+          >
+            🏆 View Leaderboard
           </Button>
         </div>
       </CardContent>

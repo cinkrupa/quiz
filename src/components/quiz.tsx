@@ -7,6 +7,7 @@ import { QuestionCard } from '@/components/question-card';
 import { QuizResults } from '@/components/quiz-results';
 import { QuizSettingsComponent } from '@/components/quiz-settings';
 import { PlayerSetup } from '@/components/player-setup';
+import { Leaderboard } from '@/components/leaderboard';
 
 export function Quiz() {
   const {
@@ -25,6 +26,8 @@ export function Quiz() {
     resetQuiz,
     updateSettings,
     goToPlayerSetup,
+    goToLeaderboard,
+    goToQuizSettings,
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,
@@ -49,6 +52,13 @@ export function Quiz() {
     );
   }
 
+  // Leaderboard phase
+  if (gamePhase === 'leaderboard') {
+    return (
+      <Leaderboard onBack={goToQuizSettings} />
+    );
+  }
+
   // Quiz settings phase
   if (gamePhase === 'quiz-settings') {
     return (
@@ -58,6 +68,7 @@ export function Quiz() {
         onSettingsChange={updateSettings}
         onStartQuiz={handleStartQuiz}
         onChangePlayer={goToPlayerSetup}
+        onShowLeaderboard={goToLeaderboard}
       />
     );
   }

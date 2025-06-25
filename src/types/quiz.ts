@@ -44,7 +44,7 @@ export interface QuizState {
   error: string | null;
   settings: QuizSettings;
   player: Player | null;
-  gamePhase: 'player-setup' | 'quiz-settings' | 'quiz-active' | 'quiz-complete';
+  gamePhase: 'player-setup' | 'quiz-settings' | 'quiz-active' | 'quiz-complete' | 'leaderboard';
 }
 
 export interface CategoryOption {
