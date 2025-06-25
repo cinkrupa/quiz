@@ -47,6 +47,7 @@ export function Quiz() {
     return (
       <PlayerSetup
         onPlayerSetup={setupPlayer}
+        onShowLeaderboard={goToLeaderboard}
         isLoading={isLoading}
         error={error}
       />
@@ -66,10 +67,11 @@ export function Quiz() {
       <QuizSettingsComponent
         settings={settings}
         player={player}
+        error={error}
+        isLoading={isLoading}
         onSettingsChange={updateSettings}
         onStartQuiz={handleStartQuiz}
         onChangePlayer={goToPlayerSetup}
-        onShowLeaderboard={goToLeaderboard}
       />
     );
   }

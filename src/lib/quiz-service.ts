@@ -66,6 +66,8 @@ export async function fetchQuizQuestions(settings?: QuizSettings): Promise<Proce
       apiUrl += `&difficulty=${settings.difficulty}`;
     }
     
+    console.log('Fetching questions from:', apiUrl);
+    
     const response = await fetch(apiUrl);
     
     if (!response.ok) {
@@ -74,31 +76,88 @@ export async function fetchQuizQuestions(settings?: QuizSettings): Promise<Proce
     
     const data: QuizResponse = await response.json();
     
+    // Handle different API response codes
     if (data.response_code !== 0) {
-      throw new Error('Failed to fetch quiz questions from API');
+      // If no results due to specific difficulty, try with any difficulty
+      if (data.response_code === 1 && settings?.difficulty && settings.difficulty !== 'any') {
+        console.log('Not enough questions for specific difficulty, trying with any difficulty...');
+        
+        let fallbackUrl = BASE_API_URL;
+        if (settings?.category && settings.category !== 'any') {
+          fallbackUrl += `&category=${settings.category}`;
+        }
+        // Don't add difficulty parameter for fallback
+        
+        const fallbackResponse = await fetch(fallbackUrl);
+        if (fallbackResponse.ok) {
+          const fallbackData: QuizResponse = await fallbackResponse.json();
+          if (fallbackData.response_code === 0 && fallbackData.results.length > 0) {
+            console.log('Successfully retrieved questions with mixed difficulty levels');
+            // Add a property to indicate fallback was used
+            const questions = processQuestions(fallbackData.results);
+            // We could add a notification system here in the future
+            return questions;
+          }
+        }
+      }
+      
+      let errorMessage = 'Failed to fetch quiz questions from API';
+      
+      switch (data.response_code) {
+        case 1:
+          const categoryName = settings?.category && settings.category !== 'any' 
+            ? CATEGORIES.find(c => c.id === settings.category)?.name || 'selected category'
+            : 'this category';
+          const difficultyName = settings?.difficulty && settings.difficulty !== 'any'
+            ? settings.difficulty.charAt(0).toUpperCase() + settings.difficulty.slice(1)
+            : 'this difficulty';
+          
+          errorMessage = `Not enough ${difficultyName.toLowerCase()} questions available for ${categoryName}. Try selecting "Any Difficulty" or a different category.`;
+          break;
+        case 2:
+          errorMessage = 'Invalid parameters provided to the quiz API.';
+          break;
+        case 3:
+          errorMessage = 'Token not found. Please try again.';
+          break;
+        case 4:
+          errorMessage = 'Token empty. Please try again.';
+          break;
+        default:
+          errorMessage = `Quiz API returned error code ${data.response_code}. Please try again.`;
+      }
+      
+      throw new Error(errorMessage);
     }
     
-    return data.results.map((question: QuizQuestion, index: number) => {
-      // Decode HTML entities in question and answers
-      const decodedQuestion = decodeHtml(question.question);
-      const decodedCorrectAnswer = decodeHtml(question.correct_answer);
-      const decodedIncorrectAnswers = question.incorrect_answers.map(decodeHtml);
-      
-      // Combine and shuffle answers
-      const allAnswers = [decodedCorrectAnswer, ...decodedIncorrectAnswers];
-      const shuffledAnswers = shuffleArray(allAnswers);
-      
-      return {
-        id: index,
-        question: decodedQuestion,
-        options: shuffledAnswers,
-        correctAnswer: decodedCorrectAnswer,
-        category: question.category,
-        difficulty: question.difficulty,
-      };
-    });
+    return processQuestions(data.results);
   } catch (error) {
     console.error('Error fetching quiz questions:', error);
+    if (error instanceof Error) {
+      throw error; // Re-throw with original message
+    }
     throw new Error('Failed to load quiz questions. Please try again.');
   }
+}
+
+function processQuestions(questions: QuizQuestion[]): ProcessedQuestion[] {
+  return questions.map((question: QuizQuestion, index: number) => {
+    // Decode HTML entities in question and answers
+    const decodedQuestion = decodeHtml(question.question);
+    const decodedCorrectAnswer = decodeHtml(question.correct_answer);
+    const decodedIncorrectAnswers = question.incorrect_answers.map(decodeHtml);
+    
+    // Combine and shuffle answers
+    const allAnswers = [decodedCorrectAnswer, ...decodedIncorrectAnswers];
+    const shuffledAnswers = shuffleArray(allAnswers);
+    
+    return {
+      id: index,
+      question: decodedQuestion,
+      options: shuffledAnswers,
+      correctAnswer: decodedCorrectAnswer,
+      category: question.category,
+      difficulty: question.difficulty,
+    };
+  });
 }

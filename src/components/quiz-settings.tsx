@@ -8,13 +8,14 @@ import { CATEGORIES, DIFFICULTIES } from '@/lib/quiz-service';
 interface QuizSettingsProps {
   settings: QuizSettings;
   player: Player | null;
+  error?: string | null;
+  isLoading?: boolean;
   onSettingsChange: (settings: QuizSettings) => void;
   onStartQuiz: () => void;
   onChangePlayer: () => void;
-  onShowLeaderboard: () => void;
 }
 
-export function QuizSettingsComponent({ settings, player, onSettingsChange, onStartQuiz, onChangePlayer, onShowLeaderboard }: QuizSettingsProps) {
+export function QuizSettingsComponent({ settings, player, error, isLoading, onSettingsChange, onStartQuiz, onChangePlayer }: QuizSettingsProps) {
   const handleCategoryChange = (categoryId: string) => {
     onSettingsChange({
       ...settings,
@@ -98,17 +99,27 @@ export function QuizSettingsComponent({ settings, player, onSettingsChange, onSt
           </div>
         </div>
 
+        {error && (
+          <div className="p-4 bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-800">
+            <div className="flex items-center space-x-2">
+              <div className="text-red-500 text-lg">⚠️</div>
+              <div className="text-red-700 dark:text-red-300 text-sm">
+                {error}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="pt-4 border-t space-y-3">
-          <Button onClick={onStartQuiz} className="w-full" size="lg">
-            Start Quiz
-          </Button>
-          <Button 
-            onClick={onShowLeaderboard} 
-            variant="outline" 
-            className="w-full" 
-            size="lg"
-          >
-            🏆 View Leaderboard
+          <Button onClick={onStartQuiz} className="w-full" size="lg" disabled={isLoading}>
+            {isLoading ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>Loading...</span>
+              </div>
+            ) : (
+              'Start Quiz'
+            )}
           </Button>
         </div>
       </CardContent>

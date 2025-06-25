@@ -8,11 +8,12 @@ import { generateAnonymousName } from '@/lib/player-service';
 
 interface PlayerSetupProps {
   onPlayerSetup: (playerName: string) => void;
+  onShowLeaderboard: () => void;
   isLoading: boolean;
   error: string | null;
 }
 
-export function PlayerSetup({ onPlayerSetup, isLoading, error }: PlayerSetupProps) {
+export function PlayerSetup({ onPlayerSetup, onShowLeaderboard, isLoading, error }: PlayerSetupProps) {
   const [playerName, setPlayerName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -21,10 +22,7 @@ export function PlayerSetup({ onPlayerSetup, isLoading, error }: PlayerSetupProp
     onPlayerSetup(finalName);
   };
 
-  const handleGenerateAnonymous = () => {
-    const anonymousName = generateAnonymousName();
-    setPlayerName(anonymousName);
-  };
+
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -75,10 +73,10 @@ export function PlayerSetup({ onPlayerSetup, isLoading, error }: PlayerSetupProp
               type="button" 
               variant="outline" 
               className="w-full" 
-              onClick={handleGenerateAnonymous}
+              onClick={onShowLeaderboard}
               disabled={isLoading}
             >
-              Generate Anonymous Name
+              🏆 View Leaderboard
             </Button>
           </div>
         </form>

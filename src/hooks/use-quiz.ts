@@ -129,6 +129,7 @@ export function useQuiz() {
     setState(prev => ({
       ...prev,
       settings: newSettings,
+      error: null, // Clear any previous errors when settings change
     }));
   }, []);
 
