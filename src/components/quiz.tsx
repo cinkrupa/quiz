@@ -24,6 +24,7 @@ export function Quiz() {
     answerQuestion,
     nextQuestion,
     resetQuiz,
+    cancelQuiz,
     updateSettings,
     goToPlayerSetup,
     goToLeaderboard,
@@ -135,6 +136,7 @@ export function Quiz() {
       totalQuestions={questions.length}
       onAnswerSelect={answerQuestion}
       onNext={nextQuestion}
+      onCancel={cancelQuiz}
     />
   );
 }

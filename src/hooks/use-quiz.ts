@@ -168,6 +168,22 @@ export function useQuiz() {
       gamePhase: 'quiz-settings',
     }));
   }, []);
+  const cancelQuiz = useCallback(() => {
+    // Reset quiz state without updating player stats
+    setState(prev => ({
+      ...prev,
+      questions: [],
+      currentQuestionIndex: 0,
+      score: 0,
+      answers: [],
+      isQuizComplete: false,
+      error: null,
+      gamePhase: 'quiz-settings',
+    }));
+    
+    // Reset the stats updated flag
+    statsUpdatedRef.current = false;
+  }, []);
 
   return {
     ...state,
@@ -183,5 +199,6 @@ export function useQuiz() {
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,
+    cancelQuiz,
   };
 }

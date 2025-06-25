@@ -4,6 +4,7 @@ import { ProcessedQuestion } from '@/types/quiz';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { X } from 'lucide-react';
 
 interface QuestionCardProps {
   question: ProcessedQuestion;
@@ -13,6 +14,7 @@ interface QuestionCardProps {
   totalQuestions: number;
   onAnswerSelect: (answer: string) => void;
   onNext: () => void;
+  onCancel: () => void;
 }
 
 export function QuestionCard({
@@ -23,6 +25,7 @@ export function QuestionCard({
   totalQuestions,
   onAnswerSelect,
   onNext,
+  onCancel,
 }: QuestionCardProps) {
   const progressValue = (currentQuestionNumber / totalQuestions) * 100;
 
@@ -43,13 +46,27 @@ export function QuestionCard({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <div className="space-y-4">          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">
-              Question {currentQuestionNumber} of {totalQuestions}
-            </span>
-            <span className="text-sm font-medium text-muted-foreground capitalize">
-              {question.difficulty} • {question.category}
-            </span>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center w-full">
+              <span className="text-sm text-muted-foreground">
+                Question {currentQuestionNumber} of {totalQuestions}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground capitalize">
+                  {question.difficulty} • {question.category}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onCancel}
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                  title="Cancel Quiz"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
           <Progress value={progressValue} className="w-full" />
         </div>
@@ -72,8 +89,9 @@ export function QuestionCard({
           ))}
         </div>
         
-        {isAnswered && (
-          <div className="pt-4 border-t space-y-4">            <div className="text-center">
+        {isAnswered ? (
+          <div className="pt-4 border-t space-y-4">
+            <div className="text-center">
               {selectedAnswer === question.correctAnswer ? (
                 <p className="text-green-600 font-medium">
                   ✅ Correct answer!
@@ -89,9 +107,21 @@ export function QuestionCard({
                 </div>
               )}
             </div>
-              <Button onClick={onNext} className="w-full">
+            <Button onClick={onNext} className="w-full">
               {currentQuestionNumber === totalQuestions ? 'See Results' : 'Next Question'}
             </Button>
+          </div>
+        ) : (
+          <div className="pt-4 border-t">
+            <div className="text-center">
+              <Button 
+                variant="outline" 
+                onClick={onCancel}
+                className="text-muted-foreground hover:text-destructive"
+              >
+                Cancel Quiz
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>
