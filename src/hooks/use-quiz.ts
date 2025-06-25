@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { QuizState, ProcessedQuestion, QuizSettings } from '@/types/quiz';
 import { fetchQuizQuestions } from '@/lib/quiz-service';
 import { createOrUpdatePlayer, updatePlayerStats } from '@/lib/player-service';
@@ -44,6 +44,7 @@ export function useQuiz() {
   }, []);
 
   const startQuiz = useCallback(async (settings?: QuizSettings) => {
+    statsUpdatedRef.current = false; // Reset stats updated flag for new quiz
     setState(prev => ({ ...prev, isLoading: true, error: null, gamePhase: 'quiz-active' }));
     
     try {
@@ -83,45 +84,41 @@ export function useQuiz() {
     });
   }, []);
 
+  const statsUpdatedRef = useRef(false);
+
   const nextQuestion = useCallback(async () => {
     setState(prev => {
       const nextIndex = prev.currentQuestionIndex + 1;
       const isComplete = nextIndex >= prev.questions.length;
       
-      if (isComplete) {
-        // Quiz is complete, update player stats in Supabase
-        if (prev.player?.id) {
-          updatePlayerStats(prev.player.id, prev.score, prev.questions.length)
-            .then((updatedPlayer) => {
-              setState(current => ({
-                ...current,
-                player: updatedPlayer,
-                gamePhase: 'quiz-complete',
-              }));
-            })
-            .catch((error) => {
-              console.error('Failed to update player stats:', error);
-              setState(current => ({
-                ...current,
-                gamePhase: 'quiz-complete',
-              }));
-            });
-        } else {
-          setState(current => ({
-            ...current,
-            gamePhase: 'quiz-complete',
-          }));
-        }
-      }
-      
       return {
         ...prev,
         currentQuestionIndex: isComplete ? prev.currentQuestionIndex : nextIndex,
         isQuizComplete: isComplete,
+        gamePhase: isComplete ? 'quiz-complete' : prev.gamePhase,
       };
     });
   }, []);
+
+  // Handle stats update when quiz is completed
+  useEffect(() => {
+    if (state.isQuizComplete && state.player?.id && !statsUpdatedRef.current) {
+      statsUpdatedRef.current = true;
+      
+      updatePlayerStats(state.player.id, state.score, state.questions.length)
+        .then((updatedPlayer) => {
+          setState(current => ({
+            ...current,
+            player: updatedPlayer,
+          }));
+        })
+        .catch((error) => {
+          console.error('Failed to update player stats:', error);
+        });
+    }
+  }, [state.isQuizComplete, state.player?.id, state.score, state.questions.length]);
   const resetQuiz = useCallback(() => {
+    statsUpdatedRef.current = false; // Reset stats updated flag
     setState(prev => ({
       ...initialState,
       player: prev.player, // Keep the player data
