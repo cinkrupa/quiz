@@ -5,12 +5,25 @@ export interface DatabaseAdapter {
   updatePlayerStats(playerId: string, score: number, totalAnswers: number): Promise<Player>;
 }
 
-export class SupabaseAdapter implements DatabaseAdapter {
-  private supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>;
+// Dynamic imports to avoid bundling issues
+async function getSupabaseClient() {
+  const { createClient } = await import('@supabase/supabase-js');
+  return createClient;
+}
 
-  constructor() {
-    // Dynamically import Supabase for production
-    const { createClient } = eval('require')('@supabase/supabase-js');
+async function getSQLiteService() {
+  const { DatabaseService } = await import('./database');
+  return DatabaseService;
+}
+
+export class SupabaseAdapter implements DatabaseAdapter {
+  private supabase: ReturnType<typeof import('@supabase/supabase-js').createClient> | null = null;
+  private initialized = false;
+
+  private async initialize() {
+    if (this.initialized) return;
+
+    const createClient = await getSupabaseClient();
     
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -20,9 +33,16 @@ export class SupabaseAdapter implements DatabaseAdapter {
     }
     
     this.supabase = createClient(supabaseUrl, supabaseAnonKey);
+    this.initialized = true;
   }
 
   async createOrUpdatePlayer(name: string): Promise<Player> {
+    await this.initialize();
+    
+    if (!this.supabase) {
+      throw new Error('Supabase client not initialized');
+    }
+    
     try {
       // First, check if player already exists
       const { data: existingPlayer, error: fetchError } = await this.supabase
@@ -66,6 +86,12 @@ export class SupabaseAdapter implements DatabaseAdapter {
   }
 
   async updatePlayerStats(playerId: string, score: number, totalAnswers: number): Promise<Player> {
+    await this.initialize();
+    
+    if (!this.supabase) {
+      throw new Error('Supabase client not initialized');
+    }
+    
     try {
       const { data: existingPlayer, error: fetchError } = await this.supabase
         .from('players')
@@ -105,20 +131,34 @@ export class SupabaseAdapter implements DatabaseAdapter {
 }
 
 export class SQLiteAdapter implements DatabaseAdapter {
-  private DatabaseService: typeof import('./database').DatabaseService;
+  private databaseService: typeof import('./database').DatabaseService | null = null;
+  private initialized = false;
 
-  constructor() {
-    // Dynamically import SQLite for development
-    const { DatabaseService } = eval('require')('./database');
-    this.DatabaseService = DatabaseService;
+  private async initialize() {
+    if (this.initialized) return;
+    
+    this.databaseService = await getSQLiteService();
+    this.initialized = true;
   }
 
   async createOrUpdatePlayer(name: string): Promise<Player> {
-    return this.DatabaseService.createOrUpdatePlayer(name);
+    await this.initialize();
+    
+    if (!this.databaseService) {
+      throw new Error('Database service not initialized');
+    }
+    
+    return this.databaseService.createOrUpdatePlayer(name);
   }
 
   async updatePlayerStats(playerId: string, score: number, totalAnswers: number): Promise<Player> {
-    return this.DatabaseService.updatePlayerStats(playerId, score, totalAnswers);
+    await this.initialize();
+    
+    if (!this.databaseService) {
+      throw new Error('Database service not initialized');
+    }
+    
+    return this.databaseService.updatePlayerStats(playerId, score, totalAnswers);
   }
 }
 

@@ -207,3 +207,18 @@ npm run build  # Should succeed with both configurations
 | Offline | Yes | No |
 
 Choose SQLite for development speed, Supabase for production scalability!
+
+## 🏗️ Architecture Notes
+
+### Dynamic Import System
+The application uses dynamic imports to prevent bundling issues:
+
+- **Supabase**: Loaded asynchronously when needed in production
+- **SQLite**: Loaded asynchronously when needed in development
+- **Benefits**: Smaller bundle size, no import conflicts, environment-specific loading
+
+### Database Adapter Pattern
+- Abstract interface ensures consistent API
+- Factory function selects appropriate implementation
+- Lazy initialization prevents startup errors
+- Proper TypeScript typing throughout
