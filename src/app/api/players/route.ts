@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService } from '@/lib/database';
+import { getDatabaseAdapter } from '@/lib/database-adapter';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +9,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
-    const player = await DatabaseService.createOrUpdatePlayer(name);
+    const db = getDatabaseAdapter();
+    const player = await db.createOrUpdatePlayer(name);
     return NextResponse.json(player);
   } catch (error) {
     console.error('Error in player API:', error);
@@ -31,7 +32,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const player = await DatabaseService.updatePlayerStats(playerId, score, totalAnswers);
+    const db = getDatabaseAdapter();
+    const player = await db.updatePlayerStats(playerId, score, totalAnswers);
     return NextResponse.json(player);
   } catch (error) {
     console.error('Error updating player stats:', error);
