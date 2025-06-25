@@ -28,7 +28,6 @@ export function Quiz() {
     updateSettings,
     goToPlayerSetup,
     goToLeaderboard,
-    goToQuizSettings,
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,
