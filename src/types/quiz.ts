@@ -21,6 +21,14 @@ export interface ProcessedQuestion {
   difficulty: string;
 }
 
+export interface Player {
+  id?: string;
+  name: string;
+  score: number;
+  total_answers: number;
+  updated_at?: string;
+}
+
 export interface QuizSettings {
   category: string;
   difficulty: string;
@@ -35,6 +43,8 @@ export interface QuizState {
   isLoading: boolean;
   error: string | null;
   settings: QuizSettings;
+  player: Player | null;
+  gamePhase: 'player-setup' | 'quiz-settings' | 'quiz-active' | 'quiz-complete';
 }
 
 export interface CategoryOption {

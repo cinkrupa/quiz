@@ -1,17 +1,18 @@
 'use client';
 
-import { QuizSettings, CategoryOption, DifficultyOption } from '@/types/quiz';
+import { QuizSettings, CategoryOption, DifficultyOption, Player } from '@/types/quiz';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CATEGORIES, DIFFICULTIES } from '@/lib/quiz-service';
 
 interface QuizSettingsProps {
   settings: QuizSettings;
+  player: Player | null;
   onSettingsChange: (settings: QuizSettings) => void;
   onStartQuiz: () => void;
 }
 
-export function QuizSettingsComponent({ settings, onSettingsChange, onStartQuiz }: QuizSettingsProps) {
+export function QuizSettingsComponent({ settings, player, onSettingsChange, onStartQuiz }: QuizSettingsProps) {
   const handleCategoryChange = (categoryId: string) => {
     onSettingsChange({
       ...settings,
@@ -34,6 +35,23 @@ export function QuizSettingsComponent({ settings, onSettingsChange, onStartQuiz 
         <p className="text-muted-foreground">
           Customize your quiz experience by selecting a category and difficulty level
         </p>
+        
+        {player && (
+          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+            <div className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+              Welcome, {player.name}!
+            </div>
+            <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <div>Total Score: {player.score} points</div>
+              <div>Questions Answered: {player.total_answers}</div>
+              <div>
+                Success Rate: {player.total_answers > 0 
+                  ? Math.round((player.score / player.total_answers) * 100) 
+                  : 0}%
+              </div>
+            </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-3">

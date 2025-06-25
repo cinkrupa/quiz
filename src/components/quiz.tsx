@@ -6,16 +6,19 @@ import { Button } from '@/components/ui/button';
 import { QuestionCard } from '@/components/question-card';
 import { QuizResults } from '@/components/quiz-results';
 import { QuizSettingsComponent } from '@/components/quiz-settings';
+import { PlayerSetup } from '@/components/player-setup';
 
 export function Quiz() {
   const {
     questions,
     currentQuestionIndex,
     score,
-    isQuizComplete,
     isLoading,
     error,
     settings,
+    player,
+    gamePhase,
+    setupPlayer,
     startQuiz,
     answerQuestion,
     nextQuestion,
@@ -34,11 +37,23 @@ export function Quiz() {
     startQuiz(settings);
   };
 
-  // Welcome screen with settings
-  if (questions.length === 0 && !isLoading && !error) {
+  // Player setup phase
+  if (gamePhase === 'player-setup') {
+    return (
+      <PlayerSetup
+        onPlayerSetup={setupPlayer}
+        isLoading={isLoading}
+        error={error}
+      />
+    );
+  }
+
+  // Quiz settings phase
+  if (gamePhase === 'quiz-settings') {
     return (
       <QuizSettingsComponent
         settings={settings}
+        player={player}
         onSettingsChange={updateSettings}
         onStartQuiz={handleStartQuiz}
       />
@@ -46,8 +61,9 @@ export function Quiz() {
   }
 
   // Loading state
-  if (isLoading) {
-    return (      <Card className="w-full max-w-md mx-auto">
+  if (isLoading && gamePhase === 'quiz-active') {
+    return (
+      <Card className="w-full max-w-md mx-auto">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
           <p className="text-muted-foreground">Loading questions...</p>
@@ -57,12 +73,14 @@ export function Quiz() {
   }
 
   // Error state
-  if (error) {
-    return (      <Card className="w-full max-w-md mx-auto">
+  if (error && gamePhase === 'quiz-active') {
+    return (
+      <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="text-6xl mb-4">😔</div>
           <CardTitle className="text-xl">Oops! Something went wrong</CardTitle>
-        </CardHeader>        <CardContent className="space-y-4">
+        </CardHeader>
+        <CardContent className="space-y-4">
           <p className="text-muted-foreground text-center">{error}</p>
           <Button onClick={handleRetryQuiz} className="w-full">
             Try Again
@@ -73,7 +91,7 @@ export function Quiz() {
   }
 
   // Quiz completed - show results
-  if (isQuizComplete) {
+  if (gamePhase === 'quiz-complete') {
     return (
       <QuizResults
         score={score}

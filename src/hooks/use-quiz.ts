@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { QuizState, ProcessedQuestion, QuizSettings } from '@/types/quiz';
 import { fetchQuizQuestions } from '@/lib/quiz-service';
+import { createOrUpdatePlayer, updatePlayerStats } from '@/lib/player-service';
 
 const initialState: QuizState = {
   questions: [],
@@ -16,12 +17,34 @@ const initialState: QuizState = {
     category: 'any',
     difficulty: 'any',
   },
+  player: null,
+  gamePhase: 'player-setup',
 };
 
 export function useQuiz() {
   const [state, setState] = useState<QuizState>(initialState);
-  const startQuiz = useCallback(async (settings?: QuizSettings) => {
+  const setupPlayer = useCallback(async (playerName: string) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
+    
+    try {
+      const player = await createOrUpdatePlayer(playerName);
+      setState(prev => ({
+        ...prev,
+        player,
+        gamePhase: 'quiz-settings',
+        isLoading: false,
+      }));
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Failed to setup player',
+      }));
+    }
+  }, []);
+
+  const startQuiz = useCallback(async (settings?: QuizSettings) => {
+    setState(prev => ({ ...prev, isLoading: true, error: null, gamePhase: 'quiz-active' }));
     
     try {
       const questions = await fetchQuizQuestions(settings);
@@ -37,6 +60,7 @@ export function useQuiz() {
         ...prev,
         isLoading: false,
         error: error instanceof Error ? error.message : 'An unexpected error occurred',
+        gamePhase: 'quiz-settings',
       }));
     }
   }, []);
@@ -59,10 +83,36 @@ export function useQuiz() {
     });
   }, []);
 
-  const nextQuestion = useCallback(() => {
+  const nextQuestion = useCallback(async () => {
     setState(prev => {
       const nextIndex = prev.currentQuestionIndex + 1;
       const isComplete = nextIndex >= prev.questions.length;
+      
+      if (isComplete) {
+        // Quiz is complete, update player stats in Supabase
+        if (prev.player?.id) {
+          updatePlayerStats(prev.player.id, prev.score, prev.questions.length)
+            .then((updatedPlayer) => {
+              setState(current => ({
+                ...current,
+                player: updatedPlayer,
+                gamePhase: 'quiz-complete',
+              }));
+            })
+            .catch((error) => {
+              console.error('Failed to update player stats:', error);
+              setState(current => ({
+                ...current,
+                gamePhase: 'quiz-complete',
+              }));
+            });
+        } else {
+          setState(current => ({
+            ...current,
+            gamePhase: 'quiz-complete',
+          }));
+        }
+      }
       
       return {
         ...prev,
@@ -72,7 +122,11 @@ export function useQuiz() {
     });
   }, []);
   const resetQuiz = useCallback(() => {
-    setState(initialState);
+    setState(prev => ({
+      ...initialState,
+      player: prev.player, // Keep the player data
+      gamePhase: 'quiz-settings', // Go back to settings instead of player setup
+    }));
   }, []);
   const updateSettings = useCallback((newSettings: QuizSettings) => {
     setState(prev => ({
@@ -97,6 +151,7 @@ export function useQuiz() {
   }, [state.answers, state.currentQuestionIndex]);
   return {
     ...state,
+    setupPlayer,
     startQuiz,
     answerQuestion,
     nextQuestion,
