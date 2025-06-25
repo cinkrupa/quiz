@@ -10,9 +10,10 @@ interface QuizSettingsProps {
   player: Player | null;
   onSettingsChange: (settings: QuizSettings) => void;
   onStartQuiz: () => void;
+  onChangePlayer: () => void;
 }
 
-export function QuizSettingsComponent({ settings, player, onSettingsChange, onStartQuiz }: QuizSettingsProps) {
+export function QuizSettingsComponent({ settings, player, onSettingsChange, onStartQuiz, onChangePlayer }: QuizSettingsProps) {
   const handleCategoryChange = (categoryId: string) => {
     onSettingsChange({
       ...settings,
@@ -38,8 +39,18 @@ export function QuizSettingsComponent({ settings, player, onSettingsChange, onSt
         
         {player && (
           <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-            <div className="text-lg font-semibold text-blue-900 dark:text-blue-100">
-              Welcome, {player.name}!
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                Welcome, {player.name}!
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onChangePlayer}
+                className="text-blue-700 dark:text-blue-300 border-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900"
+              >
+                Change Player
+              </Button>
             </div>
             <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
               <div>Total Score: {player.score} points</div>

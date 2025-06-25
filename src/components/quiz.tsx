@@ -24,6 +24,7 @@ export function Quiz() {
     nextQuestion,
     resetQuiz,
     updateSettings,
+    goToPlayerSetup,
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,
@@ -56,6 +57,7 @@ export function Quiz() {
         player={player}
         onSettingsChange={updateSettings}
         onStartQuiz={handleStartQuiz}
+        onChangePlayer={goToPlayerSetup}
       />
     );
   }

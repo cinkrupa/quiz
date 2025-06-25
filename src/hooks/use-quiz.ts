@@ -146,6 +146,15 @@ export function useQuiz() {
   const getCurrentAnswer = useCallback((): string | null => {
     return state.answers[state.currentQuestionIndex] ?? null;
   }, [state.answers, state.currentQuestionIndex]);
+
+  const goToPlayerSetup = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      gamePhase: 'player-setup',
+      player: null, // Clear current player
+    }));
+  }, []);
+
   return {
     ...state,
     setupPlayer,
@@ -154,6 +163,7 @@ export function useQuiz() {
     nextQuestion,
     resetQuiz,
     updateSettings,
+    goToPlayerSetup,
     getCurrentQuestion,
     isAnswered,
     getCurrentAnswer,
