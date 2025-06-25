@@ -1,61 +1,75 @@
-# Kn## 🚀 Features
+# Quiz Application - Next.js with Local SQLite Database
 
-- **Home page** with category and difficulty selection
-- **Customizable quiz settings** - choose from 25+ categories and 3 difficulty levels
-- **10 multiple choice questions** fetched from Open Trivia DB API
-- **Question cards** with randomly arranged answers
-- **Immediate feedback** after selecting an answer
-- **Results summary** with percentage score
-- **Responsive design** that works on all devices
-- **Smooth transitions** between questions
-- **Progress bar** showing quiz progressiz - Next.js Quiz Application
+Interactive quiz application built with Next.js 14 using App Router, TypeScript, Tailwind CSS, shadcn/ui, and local SQLite database for development.
 
-Interactive quiz application built with Next.js 14 using App Router, TypeScript, Tailwind CSS, and shadcn/ui.
+## ��� Features
 
-## 🚀 Funkcjonalości
+- **Player Setup** - Enter custom name or get auto-generated anonymous name
+- **Quiz Settings** - Choose from 25+ categories and 3 difficulty levels  
+- **10 Multiple Choice Questions** - Fetched from Open Trivia DB API
+- **Interactive Question Cards** - With randomly arranged answers
+- **Immediate Feedback** - Visual feedback after selecting answers
+- **Score Tracking** - Real-time progress and final results
+- **Player Statistics** - Persistent stats across quiz sessions
+- **Responsive Design** - Works perfectly on all devices
+- **Smooth Transitions** - Clean animations between game phases
+- **Local Database** - SQLite for development (no external services needed)
 
-- **Strona główna** z przyciskiem "Rozpocznij Quiz"
-- **10 pytań wielokrotnego wyboru** pobieranych z Open Trivia DB API
-- **Karty pytań** z losowo rozmieszczonymi odpowiedziami
-- **Natychmiastowe feedback** po wyborze odpowiedzi
-- **Podsumowanie wyników** z procentowym wynikiem
-- **Responsywny design** działający na wszystkich urządzeniach
-- **Smooth transitions** między pytaniami
-- **Progress bar** pokazujący postęp quizu
+## ���️ Tech Stack
 
-## 🛠️ Stack Technologiczny
+- **Next.js 14** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **shadcn/ui** for UI components
+- **SQLite** for local database storage
+- **OpenTDB API** for trivia questions
 
-- **Next.js 14** z App Router
-- **TypeScript** dla type safety
-- **Tailwind CSS** do stylowania
-- **shadcn/ui** dla komponentów UI
-- **OpenTDB API** dla pytań quizowych
+## ��� Installation & Setup
 
-## 📦 Instalacja
-
-1. Sklonuj repozytorium:
+1. Clone the repository:
 ```bash
 git clone <repository-url>
 cd quiz
 ```
 
-2. Zainstaluj zależności:
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Uruchom aplikację w trybie deweloperskim:
+3. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Otwórz [http://localhost:3000](http://localhost:3000) w przeglądarce.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🔧 Dostępne Skrypty
+The SQLite database will be created automatically on first run. No additional setup required!
 
-- `npm run dev` - Uruchom w trybie deweloperskim
-- `npm run build` - Zbuduj aplikację do produkcji
-- `npm run start` - Uruchom zbudowaną aplikację
-- `npm run lint` - Sprawdź kod z ESLint
+## ���️ Database
 
-Zbudowane z ❤️ używając Next.js i TypeScript
+This application uses a local SQLite database for development:
+
+- **Database File**: `quiz.db` (created automatically)
+- **Player Data**: Name, score, total answers, and timestamps
+- **API Routes**: `/api/players` for database operations
+- **Persistent Storage**: Data survives application restarts
+
+See [SQLITE_SETUP.md](SQLITE_SETUP.md) for detailed database information.
+
+## ��� Available Scripts
+
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+## ��� How to Play
+
+1. **Enter Your Name** - Or get a fun anonymous name like "Anonymous Lion"
+2. **Choose Category** - Select from topics like Science, Sports, History, etc.
+3. **Pick Difficulty** - Easy, Medium, or Hard
+4. **Answer Questions** - 10 multiple choice questions with immediate feedback
+5. **View Results** - See your score and cumulative statistics
+
+Built with ❤️ using Next.js, TypeScript, and SQLite

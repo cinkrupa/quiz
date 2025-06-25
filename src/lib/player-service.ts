@@ -1,4 +1,4 @@
-import { supabase, Player } from '@/lib/supabase';
+import { Player } from '@/types/quiz';
 
 // List of animals for anonymous player names
 const ANIMALS = [
@@ -16,41 +16,19 @@ export function generateAnonymousName(): string {
 
 export async function createOrUpdatePlayer(name: string): Promise<Player> {
   try {
-    // First, check if player already exists
-    const { data: existingPlayer, error: fetchError } = await supabase
-      .from('players')
-      .select('*')
-      .eq('name', name)
-      .single();
+    const response = await fetch('/api/players', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name }),
+    });
 
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      // PGRST116 is "not found" error, which is expected for new players
-      throw fetchError;
+    if (!response.ok) {
+      throw new Error('Failed to create or update player');
     }
 
-    if (existingPlayer) {
-      // Player exists, return existing data
-      return existingPlayer;
-    }
-
-    // Player doesn't exist, create new one
-    const newPlayer: Omit<Player, 'id' | 'updated_at'> = {
-      name,
-      score: 0,
-      total_answers: 0,
-    };
-
-    const { data, error } = await supabase
-      .from('players')
-      .insert([newPlayer])
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error creating/updating player:', error);
     throw new Error('Failed to create or update player');
@@ -59,35 +37,19 @@ export async function createOrUpdatePlayer(name: string): Promise<Player> {
 
 export async function updatePlayerStats(playerId: string, score: number, totalAnswers: number): Promise<Player> {
   try {
-    const { data: existingPlayer, error: fetchError } = await supabase
-      .from('players')
-      .select('*')
-      .eq('id', playerId)
-      .single();
+    const response = await fetch('/api/players', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ playerId, score, totalAnswers }),
+    });
 
-    if (fetchError) {
-      throw fetchError;
+    if (!response.ok) {
+      throw new Error('Failed to update player statistics');
     }
 
-    const newScore = existingPlayer.score + score;
-    const newTotalAnswers = existingPlayer.total_answers + totalAnswers;
-
-    const { data, error } = await supabase
-      .from('players')
-      .update({
-        score: newScore,
-        total_answers: newTotalAnswers,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', playerId)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error updating player stats:', error);
     throw new Error('Failed to update player statistics');
