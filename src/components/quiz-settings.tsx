@@ -13,9 +13,10 @@ interface QuizSettingsProps {
   onSettingsChange: (settings: QuizSettings) => void;
   onStartQuiz: () => void;
   onChangePlayer: () => void;
+  onShowLeaderboard: () => void;
 }
 
-export function QuizSettingsComponent({ settings, player, error, isLoading, onSettingsChange, onStartQuiz, onChangePlayer }: QuizSettingsProps) {
+export function QuizSettingsComponent({ settings, player, error, isLoading, onSettingsChange, onStartQuiz, onChangePlayer, onShowLeaderboard }: QuizSettingsProps) {
   const handleCategoryChange = (categoryId: string) => {
     onSettingsChange({
       ...settings,
@@ -40,11 +41,22 @@ export function QuizSettingsComponent({ settings, player, error, isLoading, onSe
         </p>
         
         {player && (
-          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-lg font-semibold text-blue-900 dark:text-blue-100">
+          <div className="mt-4 space-y-3">
+            <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+              <div className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
                 Welcome, {player.name}!
               </div>
+              <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                <div>Total Score: {player.score} points</div>
+                <div>Questions Answered: {player.total_answers}</div>
+                <div>
+                  Success Rate: {player.total_answers > 0 
+                    ? Math.round((player.score / player.total_answers) * 100) 
+                    : 0}%
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -53,15 +65,14 @@ export function QuizSettingsComponent({ settings, player, error, isLoading, onSe
               >
                 Change Player
               </Button>
-            </div>
-            <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-              <div>Total Score: {player.score} points</div>
-              <div>Questions Answered: {player.total_answers}</div>
-              <div>
-                Success Rate: {player.total_answers > 0 
-                  ? Math.round((player.score / player.total_answers) * 100) 
-                  : 0}%
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onShowLeaderboard}
+                className="text-blue-700 dark:text-blue-300 border-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900"
+              >
+                🏆 View Leaderboard
+              </Button>
             </div>
           </div>
         )}

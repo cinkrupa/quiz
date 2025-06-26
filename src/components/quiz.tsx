@@ -71,6 +71,7 @@ export function Quiz() {
         onSettingsChange={updateSettings}
         onStartQuiz={handleStartQuiz}
         onChangePlayer={goToPlayerSetup}
+        onShowLeaderboard={goToLeaderboard}
       />
     );
   }
