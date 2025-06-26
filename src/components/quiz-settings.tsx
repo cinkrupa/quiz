@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { QuizSettings, CategoryOption, DifficultyOption, Player } from '@/types/quiz';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,26 @@ interface QuizSettingsProps {
 }
 
 export function QuizSettingsComponent({ settings, player, error, isLoading, onSettingsChange, onStartQuiz, onChangePlayer, onShowLeaderboard }: QuizSettingsProps) {
+  const [playerRank, setPlayerRank] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchPlayerRank = async () => {
+      if (player?.id) {
+        try {
+          const response = await fetch(`/api/players?action=rank&playerId=${player.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setPlayerRank(data.rank);
+          }
+        } catch (error) {
+          console.error('Error fetching player rank:', error);
+        }
+      }
+    };
+
+    fetchPlayerRank();
+  }, [player?.id]);
+
   const handleCategoryChange = (categoryId: string) => {
     onSettingsChange({
       ...settings,
@@ -47,6 +68,9 @@ export function QuizSettingsComponent({ settings, player, error, isLoading, onSe
                 Welcome, {player.name}!
               </div>
               <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                <div>
+                  Ranking Position: {playerRank !== null ? `#${playerRank}` : 'Loading...'}
+                </div>
                 <div>Total Score: {player.score} points</div>
                 <div>Questions Answered: {player.total_answers}</div>
                 <div>

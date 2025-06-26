@@ -55,6 +55,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ players });
     }
     
+    if (action === 'rank') {
+      const playerId = searchParams.get('playerId');
+      
+      if (!playerId) {
+        return NextResponse.json({ error: 'playerId is required' }, { status: 400 });
+      }
+      
+      const db = getDatabaseAdapter();
+      const rank = await db.getPlayerRank(playerId);
+      return NextResponse.json({ rank });
+    }
+    
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
     console.error('Error in player API GET:', error);

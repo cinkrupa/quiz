@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QuizSettingsComponent } from '../quiz-settings'
 
@@ -45,6 +45,7 @@ describe('QuizSettingsComponent', () => {
     onSettingsChange: jest.fn(),
     onStartQuiz: jest.fn(),
     onChangePlayer: jest.fn(),
+    onShowLeaderboard: jest.fn(),
   }
 
   beforeEach(() => {
@@ -64,6 +65,7 @@ describe('QuizSettingsComponent', () => {
     render(<QuizSettingsComponent {...mockProps} />)
     
     expect(screen.getByText('Welcome, Test Player!')).toBeInTheDocument()
+    expect(screen.getByText(/Ranking Position:/)).toBeInTheDocument()
     expect(screen.getByText('Total Score: 15 points')).toBeInTheDocument()
     expect(screen.getByText('Questions Answered: 20')).toBeInTheDocument()
     expect(screen.getByText('Success Rate: 75%')).toBeInTheDocument()

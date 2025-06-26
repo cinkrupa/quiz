@@ -4,6 +4,7 @@ export interface DatabaseAdapter {
   createOrUpdatePlayer(name: string): Promise<Player>;
   updatePlayerStats(playerId: string, score: number, totalAnswers: number): Promise<Player>;
   getLeaderboard(limit?: number): Promise<Player[]>;
+  getPlayerRank(playerId: string): Promise<number | null>;
 }
 
 // Dynamic imports to avoid bundling issues
@@ -155,6 +156,43 @@ export class SupabaseAdapter implements DatabaseAdapter {
       throw new Error('Failed to fetch leaderboard');
     }
   }
+
+  async getPlayerRank(playerId: string): Promise<number | null> {
+    await this.initialize();
+    
+    if (!this.supabase) {
+      throw new Error('Supabase client not initialized');
+    }
+    
+    try {
+      // Get the player's score first
+      const { data: playerData, error: playerError } = await this.supabase
+        .from('players')
+        .select('score')
+        .eq('id', playerId)
+        .single();
+
+      if (playerError || !playerData) {
+        return null;
+      }
+
+      // Count how many players have a higher score
+      const { count, error: countError } = await this.supabase
+        .from('players')
+        .select('id', { count: 'exact' })
+        .gt('score', playerData.score);
+
+      if (countError) {
+        throw countError;
+      }
+
+      // Rank is the count of players with higher scores + 1
+      return (count || 0) + 1;
+    } catch (error) {
+      console.error('Error getting player rank:', error);
+      return null;
+    }
+  }
 }
 
 export class SQLiteAdapter implements DatabaseAdapter {
@@ -196,6 +234,16 @@ export class SQLiteAdapter implements DatabaseAdapter {
     }
     
     return this.databaseService.getLeaderboard(limit);
+  }
+
+  async getPlayerRank(playerId: string): Promise<number | null> {
+    await this.initialize();
+    
+    if (!this.databaseService) {
+      throw new Error('Database service not initialized');
+    }
+    
+    return this.databaseService.getPlayerRank(playerId);
   }
 }
 

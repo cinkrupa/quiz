@@ -51,6 +51,11 @@ const selectLeaderboard = db.prepare(`
   LIMIT ?
 `);
 
+const countPlayersWithHigherScore = db.prepare(`
+  SELECT COUNT(*) as count FROM players 
+  WHERE score > (SELECT score FROM players WHERE id = ?)
+`);
+
 export class DatabaseService {
   static async createOrUpdatePlayer(name: string): Promise<Player> {
     try {
@@ -114,6 +119,26 @@ export class DatabaseService {
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
       throw new Error('Failed to fetch leaderboard');
+    }
+  }
+
+  static async getPlayerRank(playerId: string): Promise<number | null> {
+    try {
+      // Check if player exists
+      const player = selectPlayerById.get(playerId) as Player | undefined;
+      
+      if (!player) {
+        return null;
+      }
+
+      // Count players with higher scores
+      const result = countPlayersWithHigherScore.get(playerId) as { count: number };
+      
+      // Rank is the count of players with higher scores + 1
+      return result.count + 1;
+    } catch (error) {
+      console.error('Error getting player rank:', error);
+      return null;
     }
   }
 
